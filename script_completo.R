@@ -4,7 +4,7 @@
 
 ## Instalar pacotes -----
 install.packages(c(
-  "sdm", "rnaturalearth", "tidyverse"
+  "spocc", "sdm", "rnaturalearth", "tidyverse"
 ))
 
 ## Carregar pacotes -----
@@ -32,6 +32,25 @@ cores_mapa = c() # paleta de cores
 # ---------------------------------------------------------------------- #
 
 ## Dados de ocorrência -----
+
+# NOTA ----------------------------------------------------------------- #
+#
+# Os passos descritos abaixo (opção 1 e opção 2) não devem ser feitos em
+# sequência: você precisa ESCOLHER uma das opções e seguir com ela. Rodar
+# ambos os códigos geraria redundância e/ou problemas.
+#
+# Única situação onde os códigos devem ser rodados em sequência envolve
+# a combinação de dados tabelados por você (e.g. retirados da literatura)
+# com dados disponíveis nas bases virtuais.
+#
+# ---------------------------------------------------------------------- #
+
+### Carregar dados do Excel -----
+occ <- readxl::read_excel("nome_da_pasta/nome_do_arquivo.xlsx") # formato XLSX
+occ <- read.csv("nome_da_pasta/nome_do_arquivo.xlsx") # formato CSV
+
+### Baixar dados pelo R -----
+
 
 ## Dados ambientais -----
 
