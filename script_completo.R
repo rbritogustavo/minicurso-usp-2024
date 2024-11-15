@@ -26,7 +26,7 @@ installAll()
 ## Definir opções de trabalho -----
 options(scipen = 9999) # remover notação científica
 
-cores_mapa = c("#173F5F", "#20639B", "#3CAEA3", "#F6D55C", "#ED553B") # paleta
+cores_mapa <- c("#173F5F", "#20639B", "#3CAEA3", "#F6D55C", "#ED553B") # paleta
 
 # ---------------------------------------------------------------------- #
 # 01. Pré-modelagem -----
@@ -100,7 +100,7 @@ env <- geodata::escolher_função # ?geodata::nome_da_função para abrir a ajud
 ## Processar dados ambientais -----
 
 ### Recortar e mascarar para a área de estudo -----
-area_estudo <- sf::st_read(nome_da_pasta/nome_do_arquivo.shp) # shapefile
+area_estudo <- sf::st_read(nome_da_pasta / nome_do_arquivo.shp) # shapefile
 
 env <- crop(env, area_estudo)
 env <- mask(env, area_estudo)
@@ -126,7 +126,7 @@ valores_env <- extract(occ, env) # extrair info. ambientais das ocorrências
 vif_cor <- usdm::vifcor(
   valores_env, # objeto com os valores ambientais "ponto a ponto"
   th = 0.8 # limite de corte (threshold) para o teste
-  )
+)
 
 vif_step <- usdm::vifstep(
   valores_env,
@@ -211,7 +211,7 @@ modelo_unico <- sdm(
   parallelSetting = list( # processo paralelizado (multinúcleo)
     ncore = 2, # número de núcleos do processador para paralelizar
     method = "parallel"
-    )
+  )
 )
 
 ## Treinar um modelo "multi algorithm" -----
@@ -232,7 +232,7 @@ write.sdm(
   modelo_unico, # objeto com o modelo
   filename = "nome_da_pasta/nome_do_arquivo", # local e nome do arquivo
   overwrite = TRUE # parâmetro para sobrescrever caso o arquivo já exista
-  )
+)
 
 write.sdm(
   modelo_multi,
@@ -259,7 +259,3 @@ write.sdm(
 ## Mapa de adequabilidade ambiental -----
 
 ## Mapa binário -----
-
-
-
-
