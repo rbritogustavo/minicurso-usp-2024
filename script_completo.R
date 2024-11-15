@@ -26,7 +26,7 @@ installAll()
 ## Definir opções de trabalho -----
 options(scipen = 9999) # remover notação científica
 
-cores_mapa = c() # paleta de cores
+cores_mapa = c("#173F5F", "#20639B", "#3CAEA3", "#F6D55C", "#ED553B") # paleta
 
 # ---------------------------------------------------------------------- #
 # 01. Pré-modelagem -----
@@ -120,7 +120,7 @@ plot(env[[1]]) # conferir o resultado do processo
 #
 # ---------------------------------------------------------------------- #
 
-#### Fator de Inflação da Variância (VIF) -----
+#### Opção 1: Fator de Inflação da Variância (VIF) -----
 valores_env <- extract(occ, env) # extrair info. ambientais das ocorrências
 
 vif_cor <- usdm::vifcor(
@@ -148,10 +148,19 @@ vif_step
 env_cor <- usdm::exclude(env, vif_cor)
 env_step <- usdm::exclude(env, vif_step)
 
-#### Análise de Componentes Principais (PCA) -----
+#### Opção 2: Análise de Componentes Principais (PCA) -----
 
 
 ### Exportar o conjunto final de variáveis -----
+
+# NOTA ----------------------------------------------------------------- #
+#
+# O código a seguir só deve ser rodado após você selecionar um dos métodos
+# de análise das variáveis. Lembre-se: NUNCA rode ambos os códigos. Escolha
+# uma opção e siga com ela até o fim do processo.
+#
+# ---------------------------------------------------------------------- #
+
 writeRaster(
   env_selecionado,
   filename = paste0("nome_da_pasta/", names(env_selecionado), ".tif")
@@ -163,9 +172,73 @@ writeRaster(
 
 ## Criar instruções para o modelo -----
 
+### Gerar dados de background ou de pseudo ausência -----
+dados_bg <- background(
+  env_selecionado, # objeto com os rasters ambientais
+  n = 10000, # número de pontos
+  method = "gRandom" # método para gerar os pontos
+)
+
+### Criar a coluna de presença da espécie -----
+occ_limpo <- occ_limpo %>% mutate(nome_da_especie = 1) # 1 = presença
+
+instrucoes_modelo <- sdmData(
+  formula = nome_da_especie ~ . + coords(longitude + latitude), # fórmula
+  train = occ_limpo, # objeto com as ocorrências
+  predictors = env_selecionado, # objeto com os rasters ambientais
+  bg = dados_bg # objeto com os dados de background ou de pseudo ausência
+)
+
+instrucoes_modelo # sumário do objeto
+
+# NOTA ----------------------------------------------------------------- #
+#
+# Os códigos abaixo dizem respeito ao treino propriamente dito do modelo.
+# No entanto, utilizar um ou mais algoritmos para o processo vai dos seus
+# objetivos de pesquisa, portanto NÃO É NECESSÁRIO rodar ambos os códigos.
+#
+# Escolha a opção que melhor se encaixa com sua pesquisa (e com sua máquina).
+#
+# ---------------------------------------------------------------------- #
+
 ## Treinar um modelo "single algorithm" -----
+modelo_unico <- sdm(
+  formula = nome_da_especie ~ . + coords(longitude + latitude), # fórmula
+  methods = "Maxent", # nome do algoritmo
+  replication = "sub", # método de "sorteio" dos dados para treino
+  n = 100, # número de repetições
+  test.percent = 25, # percentagem de dados separados para o teste do modelo
+  parallelSetting = list( # processo paralelizado (multinúcleo)
+    ncore = 2, # número de núcleos do processador para paralelizar
+    method = "parallel"
+    )
+)
 
 ## Treinar um modelo "multi algorithm" -----
+modelo_multi <- sdm(
+  formula = nome_da_especie ~ . + coords(longitude + latitude), # fórmula
+  methods = c("GLM", "Maxent", "RF"), # nome dos algoritmos
+  replication = "sub", # método de "sorteio" dos dados para treino
+  n = 100, # número de repetições
+  test.percent = 25, # percentagem de dados separados para o teste do modelo
+  parallelSetting = list( # processo paralelizado (multinúcleo)
+    ncore = 2, # número de núcleos do processador para paralelizar
+    method = "parallel"
+  )
+)
+
+### Salvar o modelo no disco -----
+write.sdm(
+  modelo_unico, # objeto com o modelo
+  filename = "nome_da_pasta/nome_do_arquivo", # local e nome do arquivo
+  overwrite = TRUE # parâmetro para sobrescrever caso o arquivo já exista
+  )
+
+write.sdm(
+  modelo_multi,
+  filename = "nome_da_pasta/nome_do_arquivo",
+  overwrite = TRUE
+)
 
 # ---------------------------------------------------------------------- #
 # 03. Pós-modelagem -----
