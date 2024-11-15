@@ -246,11 +246,18 @@ write.sdm(
 
 ## Avaliar a performance do modelo -----
 
+
 ## Avaliar a contribuição das variáveis -----
+
+
+## Extrair curvas de resposta -----
+
 
 ## Criar projeções -----
 
+
 ## Criar ensemble -----
+
 
 # ---------------------------------------------------------------------- #
 # 04. Plotar mapas -----
