@@ -100,10 +100,37 @@ env <- geodata::escolher_função # ?geodata::nome_da_função para abrir a ajud
 ## Processar dados ambientais -----
 
 ### Recortar e mascarar para a área de estudo -----
+area_estudo <- sf::st_read(nome_da_pasta/nome_do_arquivo.shp) # shapefile
+
+env <- crop(env, area_estudo)
+env <- mask(env, area_estudo)
+
+plot(env[[1]]) # conferir o resultado do processo
 
 ### Análise de multicolinearidade / correlação -----
 
+# NOTA ----------------------------------------------------------------- #
+#
+# Há diferentes possibilidades para a mesma finalidade: diminuir o viés
+# das variáveis no modelo. Aqui apresentamos duas possibilidades: o VIF
+# e a PCA.
+#
+# NÃO É NECESSÁRIO utilizar ambos os processos, escolha o que melhor se
+# adequa à sua realidade.
+#
+# ---------------------------------------------------------------------- #
+
+#### Fator de Inflação da Variância (VIF) -----
+
+
+#### Análise de Componentes Principais (PCA) -----
+
+
 ### Exportar o conjunto final de variáveis -----
+writeRaster(
+  env_selecionado,
+  filename = paste0("nome_da_pasta/", names(env_selecionado), ".tif")
+)
 
 # ---------------------------------------------------------------------- #
 # 02. Modelagem -----
