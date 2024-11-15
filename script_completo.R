@@ -4,7 +4,8 @@
 
 ## Instalar pacotes -----
 install.packages(c(
-  "spocc", "sdm", "rnaturalearth", "tidyverse"
+  "CoordinateCleaner", "spThin", "spocc",
+  "sdm", "rnaturalearth", "tidyverse"
 ))
 
 ## Carregar pacotes -----
@@ -50,9 +51,46 @@ occ <- readxl::read_excel("nome_da_pasta/nome_do_arquivo.xlsx") # formato XLSX
 occ <- read.csv("nome_da_pasta/nome_do_arquivo.xlsx") # formato CSV
 
 ### Baixar dados pelo R -----
+occ <- occ(
+  query = "Nome da espécie",
+  from = "nome da base", # é possível concatenar mais de uma base
+  limit = 10000, # número de ocorrências retornadas pela função
+  has_coords = TRUE # retorna apenas dados com coordenadas completas
+)
 
+## Processar ocorrências -----
+
+### Filtragem com coordinateCleaner -----
+
+
+### Espacializar com spThin -----
+
+
+### Exportar dados "limpos" -----
+writexl::write_xlsx(occ_limpo, "nome_da_pasta/nome_do_arquivo.xlsx")
+
+write.csv(occ_limpo, "nome_da_pasta/nome_do_arquivo.csv", row.names = FALSE)
 
 ## Dados ambientais -----
+
+### Carregar dados baixados -----
+env <- rast(
+  list.files(
+    path = "nome_da_pasta/", # pasta que contém os arquivos
+    pattern = ".tif", # formato dos arquivos
+    full.names = TRUE # retorna o nome completo dos arquivos
+  )
+)
+
+### Baixar dados pelo R -----
+
+## Processar dados ambientais -----
+
+### Recortar e mascarar para a área de estudo -----
+
+### Análise de multicolinearidade / correlação -----
+
+### Exportar o conjunto final de variáveis -----
 
 # ---------------------------------------------------------------------- #
 # 02. Modelagem -----
