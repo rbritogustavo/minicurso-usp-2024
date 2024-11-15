@@ -121,7 +121,32 @@ plot(env[[1]]) # conferir o resultado do processo
 # ---------------------------------------------------------------------- #
 
 #### Fator de Inflação da Variância (VIF) -----
+valores_env <- extract(occ, env) # extrair info. ambientais das ocorrências
 
+vif_cor <- usdm::vifcor(
+  valores_env, # objeto com os valores ambientais "ponto a ponto"
+  th = 0.8 # limite de corte (threshold) para o teste
+  )
+
+vif_step <- usdm::vifstep(
+  valores_env,
+  th = 10
+)
+
+# NOTA ----------------------------------------------------------------- #
+#
+# Há um motivo para utilizar dois tipos de cálculo para o VIF: a ideia é
+# verificar se ambos os testes selecionam variáveis em comum de modo a
+# facilitar a decisão de quais variáveis irão compor o processo de
+# treinamento do modelo. Mas lembre-se: a Biologia tem precedência!
+#
+# ---------------------------------------------------------------------- #
+
+vif_cor # sumário do processo
+vif_step
+
+env_cor <- usdm::exclude(env, vif_cor)
+env_step <- usdm::exclude(env, vif_step)
 
 #### Análise de Componentes Principais (PCA) -----
 
